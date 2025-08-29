@@ -32,7 +32,8 @@ fun List<ArticleDbModel>.toEntities(): List<Article> {
             imageUrl = it.imageUrl,
             sourceName = it.sourceName,
             publishedAt = it.publishedAt,
-            url = it.url
+            url = it.url,
+            topic = it.topic
         )
     }.distinct()
 }
