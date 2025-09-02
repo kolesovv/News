@@ -2,6 +2,7 @@ package com.github.kolesovv.news.di
 
 import android.content.Context
 import androidx.room.Room
+import androidx.work.WorkManager
 import com.github.kolesovv.news.data.local.NewsDao
 import com.github.kolesovv.news.data.local.NewsDatabase
 import com.github.kolesovv.news.data.remote.NewsApiService
@@ -30,6 +31,12 @@ interface DataModule {
     fun bindNewsRepository(newsRepositoryImpl: NewsRepositoryImpl): NewsRepository
 
     companion object {
+
+        @Singleton
+        @Provides
+        fun provideWorkManager(@ApplicationContext context: Context): WorkManager {
+            return WorkManager.getInstance(context)
+        }
 
         @Singleton
         @Provides

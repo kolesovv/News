@@ -1,8 +1,13 @@
 package com.github.kolesovv.news.presentation.ui.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -11,16 +16,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun FilterChip(
+fun SubscriptionChip(
     modifier: Modifier = Modifier,
     topic: String,
     isSelected: Boolean,
-    onChipClick: () -> Unit,
+    onSubscriptionClick: (String) -> Unit,
+    onDeleteSubscription: (String) -> Unit
 ) {
     var selected by remember { mutableStateOf(isSelected) }
 
@@ -28,7 +35,7 @@ fun FilterChip(
         modifier = modifier,
         onClick = {
             selected = !selected
-            onChipClick()
+            onSubscriptionClick(topic)
         },
         label = {
             Text(
@@ -40,11 +47,21 @@ fun FilterChip(
             )
         },
         selected = selected,
+        trailingIcon = {
+            Icon(
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .clickable(onClick = { onDeleteSubscription(topic) }),
+                imageVector = Icons.Default.Close,
+                tint = MaterialTheme.colorScheme.onSurface,
+                contentDescription = "Icon delete topic"
+            )
+        },
         colors = FilterChipDefaults.filterChipColors(
             selectedContainerColor = MaterialTheme.colorScheme.secondary,
             selectedLabelColor = MaterialTheme.colorScheme.onBackground,
             containerColor = MaterialTheme.colorScheme.background,
-            labelColor = MaterialTheme.colorScheme.onSurface,
+            labelColor = MaterialTheme.colorScheme.onSurface
         )
     )
 }

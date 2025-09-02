@@ -1,6 +1,10 @@
 package com.github.kolesovv.news.data.repository
 
 import android.util.Log
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
+import com.github.kolesovv.news.data.background.RefreshDataWorker
 import com.github.kolesovv.news.data.local.ArticleDbModel
 import com.github.kolesovv.news.data.local.NewsDao
 import com.github.kolesovv.news.data.local.SubscriptionDbModel
@@ -16,11 +20,17 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.util.concurrent.CancellationException
+import java.util.concurrent.TimeUnit
 
 class NewsRepositoryImpl @Inject constructor(
     private val newsDao: NewsDao,
-    private val newsApiService: NewsApiService
+    private val newsApiService: NewsApiService,
+    private val workManager: WorkManager
 ) : NewsRepository {
+
+    init {
+        startBackgroundRefresh()
+    }
 
     override fun getAllSubscriptions(): Flow<List<String>> {
         return newsDao.getAllSubscriptions()
@@ -73,5 +83,18 @@ class NewsRepositoryImpl @Inject constructor(
                 listOf()
             }
         }
+    }
+
+    private fun startBackgroundRefresh() {
+
+        val request = PeriodicWorkRequestBuilder<RefreshDataWorker>(
+            15L, TimeUnit.MINUTES
+        ).build()
+
+        workManager.enqueueUniquePeriodicWork(
+            uniqueWorkName = "Refresh data",
+            existingPeriodicWorkPolicy = ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
+            request = request
+        )
     }
 }
