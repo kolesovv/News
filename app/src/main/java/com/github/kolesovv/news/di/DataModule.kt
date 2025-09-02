@@ -7,7 +7,9 @@ import com.github.kolesovv.news.data.local.NewsDao
 import com.github.kolesovv.news.data.local.NewsDatabase
 import com.github.kolesovv.news.data.remote.NewsApiService
 import com.github.kolesovv.news.data.repository.NewsRepositoryImpl
+import com.github.kolesovv.news.data.repository.SettingsRepositoryImpl
 import com.github.kolesovv.news.domain.repository.NewsRepository
+import com.github.kolesovv.news.domain.repository.SettingsRepository
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -29,6 +31,10 @@ interface DataModule {
     @Singleton
     @Binds
     fun bindNewsRepository(newsRepositoryImpl: NewsRepositoryImpl): NewsRepository
+
+    @Singleton
+    @Binds
+    fun bindSettingsRepository(settingsRepositoryImpl: SettingsRepositoryImpl): SettingsRepository
 
     companion object {
 

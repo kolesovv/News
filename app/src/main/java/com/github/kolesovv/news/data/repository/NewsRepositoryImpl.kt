@@ -1,7 +1,9 @@
 package com.github.kolesovv.news.data.repository
 
 import android.util.Log
+import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.github.kolesovv.news.data.background.RefreshDataWorker
@@ -12,6 +14,7 @@ import com.github.kolesovv.news.data.mapper.toDbModels
 import com.github.kolesovv.news.data.mapper.toEntities
 import com.github.kolesovv.news.data.remote.NewsApiService
 import com.github.kolesovv.news.domain.entity.Article
+import com.github.kolesovv.news.domain.entity.RefreshConfig
 import com.github.kolesovv.news.domain.repository.NewsRepository
 import jakarta.inject.Inject
 import kotlinx.coroutines.coroutineScope
@@ -27,10 +30,6 @@ class NewsRepositoryImpl @Inject constructor(
     private val newsApiService: NewsApiService,
     private val workManager: WorkManager
 ) : NewsRepository {
-
-    init {
-        startBackgroundRefresh()
-    }
 
     override fun getAllSubscriptions(): Flow<List<String>> {
         return newsDao.getAllSubscriptions()
@@ -85,11 +84,24 @@ class NewsRepositoryImpl @Inject constructor(
         }
     }
 
-    private fun startBackgroundRefresh() {
+    override fun startBackgroundRefresh(refreshConfig: RefreshConfig) {
+
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(
+                if (refreshConfig.wifiOnly) {
+                    NetworkType.UNMETERED
+                } else {
+                    NetworkType.CONNECTED
+                }
+            )
+            .setRequiresBatteryNotLow(true)
+            .build()
 
         val request = PeriodicWorkRequestBuilder<RefreshDataWorker>(
-            15L, TimeUnit.MINUTES
-        ).build()
+            refreshConfig.interval.minutes.toLong(),
+            TimeUnit.MINUTES
+        ).setConstraints(constraints)
+            .build()
 
         workManager.enqueueUniquePeriodicWork(
             uniqueWorkName = "Refresh data",

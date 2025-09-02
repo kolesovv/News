@@ -44,7 +44,9 @@ android {
 
 dependencies {
 
+    implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.hilt.work)
+    implementation(libs.androidx.datastore.core)
     ksp(libs.androidx.hilt.compiler)
     implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.converter.kotlinx.serialization)

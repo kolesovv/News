@@ -63,7 +63,6 @@ fun SubscriptionsScreen(
             item {
                 Subscriptions(
                     subscriptions = currentState.subscriptions,
-                    query = currentState.query,
                     isSubscriptionButtonEnabled = currentState.subscriptionButtonEnabled,
                     onSubscriptionClick = {
                         viewModel.processCommand(

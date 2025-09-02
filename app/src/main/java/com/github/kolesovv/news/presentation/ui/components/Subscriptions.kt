@@ -20,7 +20,6 @@ import androidx.compose.ui.unit.sp
 fun Subscriptions(
     modifier: Modifier = Modifier,
     subscriptions: Map<String, Boolean>,
-    query: String,
     isSubscriptionButtonEnabled: Boolean,
     onSubscriptionClick: (String) -> Unit,
     onDeleteSubscriptionClick: (String) -> Unit,
