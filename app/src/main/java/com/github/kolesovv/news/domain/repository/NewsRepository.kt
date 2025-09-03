@@ -1,6 +1,7 @@
 package com.github.kolesovv.news.domain.repository
 
 import com.github.kolesovv.news.domain.entity.Article
+import com.github.kolesovv.news.domain.entity.Language
 import com.github.kolesovv.news.domain.entity.RefreshConfig
 import kotlinx.coroutines.flow.Flow
 
@@ -10,11 +11,11 @@ interface NewsRepository {
 
     suspend fun addSubscription(topic: String)
 
-    suspend fun updatedArticlesForTopic(topic: String)
+    suspend fun updatedArticlesForTopic(topic: String, language: Language): Boolean
 
     suspend fun removeSubscription(topic: String)
 
-    suspend fun updateArticlesForAllSubscription()
+    suspend fun updateArticlesForAllSubscription(language: Language): List<String>
 
     fun getArticlesForTopics(topics: List<String>): Flow<List<Article>>
 

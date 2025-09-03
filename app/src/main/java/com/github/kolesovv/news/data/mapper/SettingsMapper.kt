@@ -1,6 +1,7 @@
 package com.github.kolesovv.news.data.mapper
 
 import com.github.kolesovv.news.domain.entity.Interval
+import com.github.kolesovv.news.domain.entity.Language
 import com.github.kolesovv.news.domain.entity.RefreshConfig
 import com.github.kolesovv.news.domain.entity.Settings
 
@@ -15,4 +16,13 @@ fun Settings.toRefreshConfig(): RefreshConfig {
         interval = this.interval,
         wifiOnly = this.wifiOnly
     )
+}
+
+fun Language.toQueryParam(): String {
+    return when (this) {
+        Language.ENGLISH -> "en"
+        Language.RUSSIAN -> "ru"
+        Language.FRENCH -> "fr"
+        Language.GERMAN -> "de"
+    }
 }

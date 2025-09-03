@@ -12,8 +12,10 @@ import com.github.kolesovv.news.data.local.NewsDao
 import com.github.kolesovv.news.data.local.SubscriptionDbModel
 import com.github.kolesovv.news.data.mapper.toDbModels
 import com.github.kolesovv.news.data.mapper.toEntities
+import com.github.kolesovv.news.data.mapper.toQueryParam
 import com.github.kolesovv.news.data.remote.NewsApiService
 import com.github.kolesovv.news.domain.entity.Article
+import com.github.kolesovv.news.domain.entity.Language
 import com.github.kolesovv.news.domain.entity.RefreshConfig
 import com.github.kolesovv.news.domain.repository.NewsRepository
 import jakarta.inject.Inject
@@ -41,9 +43,10 @@ class NewsRepositoryImpl @Inject constructor(
         newsDao.addSubscription(subscriptionDbModel)
     }
 
-    override suspend fun updatedArticlesForTopic(topic: String) {
-        val articles = loadArticles(topic)
-        newsDao.addArticles(articles)
+    override suspend fun updatedArticlesForTopic(topic: String, language: Language): Boolean {
+        val articles = loadArticles(topic, language)
+        val ids = newsDao.addArticles(articles)
+        return ids.any { it != -1L }
     }
 
     override suspend fun removeSubscription(topic: String) {
@@ -51,16 +54,22 @@ class NewsRepositoryImpl @Inject constructor(
         newsDao.removeSubscription(subscriptionDbModel)
     }
 
-    override suspend fun updateArticlesForAllSubscription() {
+    override suspend fun updateArticlesForAllSubscription(language: Language): List<String> {
+        val updatedTopics = mutableListOf<String>()
         val subscriptions = newsDao.getAllSubscriptions().first()
 
         coroutineScope {
             subscriptions.forEach {
                 launch {
-                    updatedArticlesForTopic(it.topic)
+                    val isUpdated = updatedArticlesForTopic(it.topic, language)
+                    if (isUpdated) {
+                        updatedTopics.add(it.topic)
+                    }
                 }
             }
         }
+
+        return updatedTopics
     }
 
     override fun getArticlesForTopics(topics: List<String>): Flow<List<Article>> {
@@ -71,9 +80,9 @@ class NewsRepositoryImpl @Inject constructor(
         newsDao.deleteArticlesByTopics(topics)
     }
 
-    private suspend fun loadArticles(topic: String): List<ArticleDbModel> {
+    private suspend fun loadArticles(topic: String, language: Language): List<ArticleDbModel> {
         return try {
-            newsApiService.loadArticles(topic).toDbModels(topic)
+            newsApiService.loadArticles(topic, language.toQueryParam()).toDbModels(topic)
         } catch (e: Exception) {
             if (e is CancellationException) {
                 throw e
