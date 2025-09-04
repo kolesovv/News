@@ -45,7 +45,7 @@ fun SubscriptionsScreen(
         }
     ) { innerPadding ->
         LazyColumn(
-            modifier = Modifier.padding(horizontal = 24.dp),
+            modifier = Modifier.padding(horizontal = 18.dp),
             contentPadding = innerPadding
         ) {
             item {

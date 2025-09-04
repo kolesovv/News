@@ -55,7 +55,7 @@ class SettingsRepositoryImpl @Inject constructor(
 
     override suspend fun updateInterval(interval: Interval) {
         context.dataStore.edit { settings ->
-            settings[intervalKey] = intervalKey.name.toInt()
+            settings[intervalKey] = interval.minutes
         }
     }
 
