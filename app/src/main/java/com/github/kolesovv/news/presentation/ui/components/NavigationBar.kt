@@ -57,11 +57,7 @@ fun NavigationBar(
             },
             icon = {
                 Icon(
-                    painter = if (selectedItem == 1) {
-                        painterResource(R.drawable.ic_archive_tick)
-                    } else {
-                        painterResource(R.drawable.ic_archive_minus)
-                    },
+                    painter = painterResource(R.drawable.ic_archive_minus),
                     contentDescription = routes[1],
                     tint = MaterialTheme.colorScheme.onSurface
                 )

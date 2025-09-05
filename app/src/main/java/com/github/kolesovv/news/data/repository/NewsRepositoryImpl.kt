@@ -54,7 +54,7 @@ class NewsRepositoryImpl @Inject constructor(
         newsDao.removeSubscription(subscriptionDbModel)
     }
 
-    override suspend fun updateArticlesForAllSubscription(language: Language): List<String> {
+    override suspend fun updateArticlesForAllSubscriptions(language: Language): List<String> {
         val updatedTopics = mutableListOf<String>()
         val subscriptions = newsDao.getAllSubscriptions().first()
 

@@ -2,7 +2,10 @@
 
 package com.github.kolesovv.news.presentation.screen.settings
 
+import android.os.Build
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -51,6 +54,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.github.kolesovv.news.data.mapper.toReadableFormat
 import com.github.kolesovv.news.domain.entity.Interval
 import com.github.kolesovv.news.domain.entity.Language
 import kotlin.math.roundToInt
@@ -62,54 +66,52 @@ fun SettingsScreen(
     onNavigateToSubscriptionScreen: () -> Unit
 ) {
 
-    val state = viewModel.state.collectAsState()
-    val currentState = state.value
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = { viewModel.processCommand(SettingsCommand.SwitchNotificationEnable(it)) }
+    )
 
-    when (currentState) {
-        EditSettingsState.Initial -> {}
-        is EditSettingsState.Editing -> {
-            Scaffold(
-                topBar = {
-                    TopAppBar(
-                        colors = TopAppBarDefaults.topAppBarColors(
-                            containerColor = Color.Transparent,
-                            navigationIconContentColor = MaterialTheme.colorScheme.onSurface,
-                            actionIconContentColor = MaterialTheme.colorScheme.onSurface
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Transparent,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onSurface,
+                    actionIconContentColor = MaterialTheme.colorScheme.onSurface
+                ),
+                navigationIcon = {
+                    IconButton(
+                        modifier = Modifier,
+                        onClick = onNavigateToSubscriptionScreen,
+                        colors = IconButtonDefaults.iconButtonColors(
+                            contentColor = MaterialTheme.colorScheme.onSurface
                         ),
-                        navigationIcon = {
-                            IconButton(
-                                modifier = Modifier
-                                    .padding(start = 0.dp, end = 0.dp)
-                                /*.border(
-                                    1.dp,
-                                    MaterialTheme.colorScheme.tertiary,
-                                    RoundedCornerShape(10.dp)
-                                )
-                                .size(52.dp)*/,
-                                onClick = onNavigateToSubscriptionScreen,
-                                colors = IconButtonDefaults.iconButtonColors(
-                                    contentColor = MaterialTheme.colorScheme.onSurface
-                                ),
-                                content = {
-                                    Icon(
-                                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                        contentDescription = "Back button"
-                                    )
-                                }
-                            )
-                        },
-                        title = {
-                            Text(
-                                modifier = modifier,
-                                text = "Settings",
-                                fontSize = 22.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onBackground,
+                        content = {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Back button"
                             )
                         }
                     )
+                },
+                title = {
+                    Text(
+                        modifier = modifier,
+                        text = "Settings",
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onBackground,
+                    )
                 }
-            ) { innerPadding ->
+            )
+        }
+    ) { innerPadding ->
+        val state = viewModel.state.collectAsState()
+        val currentState = state.value
+
+        when (currentState) {
+            EditSettingsState.Initial -> {}
+            is EditSettingsState.Editing -> {
                 Column(
                     modifier = Modifier
                         .padding(horizontal = 18.dp)
@@ -159,8 +161,16 @@ fun SettingsScreen(
                             uncheckedTrackColor = MaterialTheme.colorScheme.tertiary
                         ),
                         checked = currentState.settings.notificationEnable,
-                        onCheckedChange = {
-                            viewModel.processCommand(SettingsCommand.SwitchNotificationEnable)
+                        onCheckedChange = { enabled ->
+                            if (enabled && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                                permissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+                            } else {
+                                viewModel.processCommand(
+                                    SettingsCommand.SwitchNotificationEnable(
+                                        enabled
+                                    )
+                                )
+                            }
                         }
                     )
                     Spacer(modifier = Modifier.height(24.dp))
@@ -179,7 +189,7 @@ fun SettingsScreen(
                         ),
                         checked = currentState.settings.wifiOnly,
                         onCheckedChange = {
-                            viewModel.processCommand(SettingsCommand.SwitchWifiOnly)
+                            viewModel.processCommand(SettingsCommand.SwitchWifiOnly(it))
                         }
                     )
                 }
@@ -248,7 +258,7 @@ fun LanguageRadioButtonGroup(
                 )
                 Text(
                     modifier = Modifier.padding(start = 12.dp),
-                    text = language.displayName,
+                    text = language.toReadableFormat(),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Normal,
                     color = MaterialTheme.colorScheme.onSurface
@@ -300,7 +310,7 @@ fun NotificationIntervalSlider(
             intervals.forEach {
                 Text(
                     modifier = Modifier.weight(1f),
-                    text = it.label,
+                    text = it.toReadableFormat(),
                     style = if (it == selectedInterval) {
                         TextStyle(
                             fontWeight = FontWeight.Medium,

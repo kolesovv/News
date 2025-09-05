@@ -17,18 +17,14 @@ data class Settings(
 enum class Language {
 
     ENGLISH, RUSSIAN, FRENCH, GERMAN;
-
-    val displayName
-        get() = name.lowercase().replaceFirstChar { it.uppercaseChar() }
 }
 
+enum class Interval(val minutes: Int) {
 
-enum class Interval(val label: String, val minutes: Int) {
-
-    MIN_15("15 min", 15),
-    MIN_30("30 min", 30),
-    HOUR_1("1 hour", 60),
-    HOUR_4("4 hour", 240),
-    HOUR_8("8 hour", 480),
-    HOUR_24("24 hours", 1400)
+    MIN_15(15),
+    MIN_30(30),
+    HOUR_1(60),
+    HOUR_4(240),
+    HOUR_8(480),
+    HOUR_24(1400)
 }

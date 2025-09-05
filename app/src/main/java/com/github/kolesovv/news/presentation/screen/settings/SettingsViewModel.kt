@@ -14,7 +14,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -35,74 +36,29 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun processCommand(settingsCommand: SettingsCommand) {
-        when (settingsCommand) {
-            is SettingsCommand.ChooseInterval -> {
-                viewModelScope.launch {
+        viewModelScope.launch {
+            when (settingsCommand) {
+                is SettingsCommand.ChooseInterval -> {
                     updateIntervalUseCase(settingsCommand.interval)
-                    _state.update { previousState ->
-                        if (previousState is EditSettingsState.Editing) {
-                            val newSettings =
-                                previousState.settings.copy(interval = settingsCommand.interval)
-                            previousState.copy(newSettings)
-                        } else {
-                            previousState
-                        }
-                    }
                 }
-            }
 
-            is SettingsCommand.ChooseLanguage -> {
-                viewModelScope.launch {
+                is SettingsCommand.ChooseLanguage -> {
                     updateLanguageUseCase(settingsCommand.language)
-                    _state.update { previousState ->
-                        if (previousState is EditSettingsState.Editing) {
-                            val newSettings =
-                                previousState.settings.copy(language = settingsCommand.language)
-                            previousState.copy(newSettings)
-                        } else {
-                            previousState
-                        }
-                    }
                 }
-            }
 
-            SettingsCommand.SwitchNotificationEnable -> {
-                viewModelScope.launch {
-                    _state.update { previousState ->
-                        if (previousState is EditSettingsState.Editing) {
-                            val isEnabled = !previousState.isNotificationEnable
-                            updateNotificationsEnablesUseCase(isEnabled)
-                            val newSettings =
-                                previousState.settings.copy(notificationEnable = isEnabled)
-                            previousState.copy(newSettings)
-                        } else {
-                            previousState
-                        }
-                    }
+                is SettingsCommand.SwitchNotificationEnable -> {
+                    updateNotificationsEnablesUseCase(settingsCommand.boolean)
                 }
-            }
 
-            SettingsCommand.SwitchWifiOnly -> {
-                viewModelScope.launch {
-                    _state.update { previousState ->
-                        if (previousState is EditSettingsState.Editing) {
-                            val isEnabled = !previousState.isWifiOnly
-                            updateNotificationsEnablesUseCase(isEnabled)
-                            val newSettings =
-                                previousState.settings.copy(wifiOnly = isEnabled)
-                            previousState.copy(newSettings)
-                        } else {
-                            previousState
-                        }
-                    }
+                is SettingsCommand.SwitchWifiOnly -> {
+                    updateWifiOnlyUseCase(settingsCommand.boolean)
                 }
             }
         }
     }
 
     private fun observeSettings() {
-        viewModelScope.launch {
-            val actualSettings = getSettingsUseCase().first()
+        getSettingsUseCase().onEach { actualSettings ->
             _state.update {
                 val settings = Settings(
                     language = actualSettings.language,
@@ -112,7 +68,7 @@ class SettingsViewModel @Inject constructor(
                 )
                 EditSettingsState.Editing(settings)
             }
-        }
+        }.launchIn(viewModelScope)
     }
 }
 
@@ -122,30 +78,20 @@ sealed interface SettingsCommand {
 
     data class ChooseInterval(val interval: Interval) : SettingsCommand
 
-    data object SwitchNotificationEnable : SettingsCommand
+    data class SwitchNotificationEnable(val boolean: Boolean) : SettingsCommand
 
-    data object SwitchWifiOnly : SettingsCommand
+    data class SwitchWifiOnly(val boolean: Boolean) : SettingsCommand
 
 
 }
-
-data class SettingsState(
-    val language: Language = Settings.DEFAULT_LANGUAGE,
-    val interval: Interval = Settings.DEFAULT_INTERVAL,
-    val notificationEnable: Boolean = Settings.DEFAULT_NOTIFICATION,
-    val wifiOnly: Boolean = Settings.DEFAULT_WIFI_ONLY
-)
 
 sealed interface EditSettingsState {
 
     data object Initial : EditSettingsState
 
-    data class Editing(val settings: Settings) : EditSettingsState {
-
-        val isNotificationEnable: Boolean
-            get() = settings.notificationEnable
-
-        val isWifiOnly: Boolean
-            get() = settings.wifiOnly
-    }
+    data class Editing(
+        val settings: Settings,
+        val language: List<Language> = Language.entries,
+        val interval: List<Interval> = Interval.entries
+    ) : EditSettingsState
 }

@@ -26,3 +26,23 @@ fun Language.toQueryParam(): String {
         Language.GERMAN -> "de"
     }
 }
+
+fun Language.toReadableFormat(): String {
+    return when (this) {
+        Language.ENGLISH -> "English"
+        Language.RUSSIAN -> "Русский"
+        Language.FRENCH -> "Français"
+        Language.GERMAN -> "Deutsch"
+    }
+}
+
+fun Interval.toReadableFormat(): String {
+    return when (this) {
+        Interval.MIN_15 -> "15 min"
+        Interval.MIN_30 -> "30 min"
+        Interval.HOUR_1 -> "1 hour"
+        Interval.HOUR_4 -> "4 hour"
+        Interval.HOUR_8 -> "8 hour"
+        Interval.HOUR_24 -> "24 hours"
+    }
+}
