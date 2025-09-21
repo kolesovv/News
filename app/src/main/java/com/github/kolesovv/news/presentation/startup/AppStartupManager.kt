@@ -14,7 +14,7 @@ class AppStartupManager @Inject constructor(
 
     private val scope = CoroutineScope(Dispatchers.IO)
 
-    fun startRefreshDataUseCase() {
-        scope.launch { startRefreshDataUseCase }
+    fun startRefreshData() {
+        scope.launch { startRefreshDataUseCase() }
     }
 }

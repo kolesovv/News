@@ -22,6 +22,6 @@ class NewsApp : Application(), Configuration.Provider {
 
     override fun onCreate() {
         super.onCreate()
-        appStartupManager.startRefreshDataUseCase()
+        appStartupManager.startRefreshData()
     }
 }
