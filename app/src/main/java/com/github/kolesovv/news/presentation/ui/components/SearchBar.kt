@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.kolesovv.news.R
@@ -42,7 +43,7 @@ fun SearchBar(
         maxLines = 1,
         placeholder = {
             Text(
-                text = "Search \"News\"",
+                text = stringResource(R.string.search_news),
                 color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 18.sp
             )
@@ -50,7 +51,7 @@ fun SearchBar(
         leadingIcon = {
             Icon(
                 painter = painterResource(R.drawable.ic_search),
-                contentDescription = "Search icon",
+                contentDescription = stringResource(R.string.search_icon),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
         },

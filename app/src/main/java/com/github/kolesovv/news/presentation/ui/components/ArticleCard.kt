@@ -28,11 +28,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
+import com.github.kolesovv.news.R
 import com.github.kolesovv.news.domain.entity.Article
 
 @Composable
@@ -72,7 +74,7 @@ fun ArticleCard(
                     )
                 ) {
                     Text(
-                        text = "Read",
+                        text = stringResource(R.string.read),
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onBackground,
                     )
@@ -82,7 +84,7 @@ fun ArticleCard(
                 ) {
                     Icon(
                         imageVector = Icons.Default.MoreVert,
-                        contentDescription = "Share button"
+                        contentDescription = stringResource(R.string.share_button)
                     )
                 }
             }
@@ -124,7 +126,7 @@ fun ArticleCard(
                     model = article.imageUrl,
                     onLoading = { loadingState.value = true },
                     onSuccess = { loadingState.value = false },
-                    contentDescription = "Image's article",
+                    contentDescription = stringResource(R.string.images_article),
                     contentScale = ContentScale.FillWidth
                 )
             }

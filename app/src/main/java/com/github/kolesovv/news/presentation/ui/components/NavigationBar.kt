@@ -13,6 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.github.kolesovv.news.R
 
@@ -25,7 +26,6 @@ fun NavigationBar(
 ) {
 
     var selectedItem by remember { mutableIntStateOf(0) }
-    val routes = listOf("Refresh", "Clear", "Settings")
 
     NavigationBar(
         modifier = modifier
@@ -41,7 +41,7 @@ fun NavigationBar(
             icon = {
                 Icon(
                     painter = painterResource(R.drawable.ic_download),
-                    contentDescription = routes[0],
+                    contentDescription = stringResource(R.string.refresh),
                     tint = MaterialTheme.colorScheme.onSurface
                 )
             },
@@ -58,7 +58,7 @@ fun NavigationBar(
             icon = {
                 Icon(
                     painter = painterResource(R.drawable.ic_archive_minus),
-                    contentDescription = routes[1],
+                    contentDescription = stringResource(R.string.clear),
                     tint = MaterialTheme.colorScheme.onSurface
                 )
             },
@@ -75,7 +75,7 @@ fun NavigationBar(
             icon = {
                 Icon(
                     painter = painterResource(R.drawable.ic_setting),
-                    contentDescription = routes[2],
+                    contentDescription = stringResource(R.string.settings),
                     tint = MaterialTheme.colorScheme.onSurface
                 )
             },

@@ -17,9 +17,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.github.kolesovv.news.R
 
 @Composable
 fun SubscriptionChip(
@@ -54,7 +56,7 @@ fun SubscriptionChip(
                     .clickable(onClick = { onDeleteSubscription(topic) }),
                 imageVector = Icons.Default.Close,
                 tint = MaterialTheme.colorScheme.onSurface,
-                contentDescription = "Icon delete topic"
+                contentDescription = stringResource(R.string.icon_delete_subscription)
             )
         },
         colors = FilterChipDefaults.filterChipColors(

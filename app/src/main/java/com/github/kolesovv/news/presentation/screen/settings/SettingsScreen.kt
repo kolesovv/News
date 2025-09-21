@@ -3,7 +3,6 @@
 package com.github.kolesovv.news.presentation.screen.settings
 
 import android.os.Build
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -48,12 +47,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.github.kolesovv.news.R
 import com.github.kolesovv.news.data.mapper.toReadableFormat
 import com.github.kolesovv.news.domain.entity.Interval
 import com.github.kolesovv.news.domain.entity.Language
@@ -89,7 +90,7 @@ fun SettingsScreen(
                         content = {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "Back button"
+                                contentDescription = stringResource(R.string.back_button)
                             )
                         }
                     )
@@ -119,8 +120,8 @@ fun SettingsScreen(
                         .verticalScroll(rememberScrollState())
                 ) {
                     SettingsDescription(
-                        title = "Search Language",
-                        description = "Select language for news search"
+                        title = stringResource(R.string.search_language),
+                        description = stringResource(R.string.select_language_for_news_search)
                     )
                     Spacer(modifier = Modifier.height(16.dp))
 
@@ -149,8 +150,8 @@ fun SettingsScreen(
                     Spacer(modifier = Modifier.height(16.dp))
 
                     SettingsDescription(
-                        title = "Notifications",
-                        description = "Show notifications about new articles"
+                        title = stringResource(R.string.notifications),
+                        description = stringResource(R.string.show_notifications_about_new_articles)
                     )
                     Spacer(modifier = Modifier.height(16.dp))
 
@@ -176,8 +177,8 @@ fun SettingsScreen(
                     Spacer(modifier = Modifier.height(24.dp))
 
                     SettingsDescription(
-                        title = "Update only via Wi-Fi",
-                        description = "Save mobile data"
+                        title = stringResource(R.string.update_only_via_wi_fi),
+                        description = stringResource(R.string.save_mobile_data)
                     )
                     Spacer(modifier = Modifier.height(16.dp))
 
@@ -273,7 +274,7 @@ fun NotificationIntervalSlider(
     selectedInterval: Interval,
     onIntervalChange: (Interval) -> Unit
 ) {
-    Log.d("SettingsScreen", "NotificationIntervalSlider: ${selectedInterval.ordinal.toFloat()}")
+
     val intervals: Array<Interval> = Interval.entries.toTypedArray()
     var sliderPosition by remember { mutableFloatStateOf(selectedInterval.ordinal.toFloat()) }
 

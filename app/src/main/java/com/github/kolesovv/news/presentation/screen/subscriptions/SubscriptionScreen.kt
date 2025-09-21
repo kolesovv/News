@@ -14,11 +14,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.github.kolesovv.news.R
 import com.github.kolesovv.news.presentation.ui.components.ArticleCard
 import com.github.kolesovv.news.presentation.ui.components.NavigationBar
 import com.github.kolesovv.news.presentation.ui.components.SearchBar
@@ -85,14 +87,14 @@ fun SubscriptionsScreen(
             item {
                 Text(
                     modifier = modifier,
-                    text = "News",
+                    text = stringResource(R.string.news),
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onBackground,
                 )
                 Text(
                     modifier = modifier,
-                    text = "${currentState.articles.size} Results found:",
+                    text = stringResource(R.string.results_found, currentState.articles.size),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Normal,
                     color = MaterialTheme.colorScheme.secondary,
@@ -112,7 +114,11 @@ fun SubscriptionsScreen(
                         val intent = Intent(Intent.ACTION_SEND).apply {
                             type = "text/plain"
                             val message =
-                                "I would like to share with you an interesting article: \"${article.title}\". You can read it here: ${article.url}"
+                                context.getString(
+                                    R.string.share_message,
+                                    article.title,
+                                    article.url
+                                )
                             putExtra(Intent.EXTRA_TEXT, message)
                         }
                         context.startActivity(intent)
